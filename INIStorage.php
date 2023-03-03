@@ -9,7 +9,7 @@ namespace Piminoff;
 class INIStorage
 {
     private $file  = "";
-    private $array = [[],[]];
+    private $array = array(array(),array());
     private $mode  = self::MODE_NORMAL;
 
     const MODE_NORMAL   = 0;   // Простой режим считывания INI
@@ -30,7 +30,7 @@ class INIStorage
             $this->load();
         } else {
             if ($new){
-				@touch($file,'x');
+		@touch($file);
                 $this->file = $file;
                 $this->ChangeMode($mode);
                 $this->load();
