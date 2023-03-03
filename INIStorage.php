@@ -30,7 +30,7 @@ class INIStorage
             $this->load();
         } else {
             if ($new){
-                fclose(fopen($file,'x'));
+				@touch($file,'x');
                 $this->file = $file;
                 $this->ChangeMode($mode);
                 $this->load();
@@ -56,8 +56,8 @@ class INIStorage
      * Загрузить INI-файл
      */
     function load(){
-        $this->array[0] = parse_ini_file($this->file,false,$this->mode);
-        $this->array[1] = parse_ini_file($this->file,true,$this->mode);
+        $this->array[0] = @parse_ini_file($this->file,false,$this->mode);
+        $this->array[1] = @parse_ini_file($this->file,true,$this->mode);
         if ($this->array[0] == false){
             new \Exception("Не удалось считать INI-файл");
         }
@@ -84,6 +84,32 @@ class INIStorage
             }
         }
     }
+	
+	/**
+     * Проверяет существует ли ключ, если нет то создает его
+     * При записи использовать только во всем коде или с секциями или без
+     * @param $name - Ключ
+     * @param $value - Значение
+     * @param false $section - Секция
+     *
+     */
+	function def($name,$value,$section=false){
+		if ($section){
+            if (isset($this->array[1][$section][$name])){
+                return $this->array[1][$section][$name];
+            } else {
+                $this->array[1][$section][$name] = $value;
+				return $value;
+            }
+        } else {
+            if (isset($this->array[0][$name])){
+                return $this->array[0][$name];
+            } else {
+				$this->array[0][$name] = $value;
+                return null;
+            }
+        }
+	}
 
     /**
      * Запись значение/ключ
@@ -125,7 +151,7 @@ class INIStorage
             new \Exception("The file is not writable, check the permissions.");
         } elseif ($section){
             $fp = fopen($this->file, 'w');
-            fwrite($fp, '; INI-Storage'."\n");
+            fwrite($fp, "; INIStorage\n");
             fwrite($fp, "; GitHub: https://github.com/pimnik98/INIStorage\n");
             fwrite($fp, '; Generation start...'."\n");
             foreach ($this->toArray(1) as $section_k => $section_v){
@@ -143,7 +169,7 @@ class INIStorage
             fclose($fp);
         } else {
             $fp = fopen($this->file, 'w');
-            fwrite($fp, '; INI-Storage'."\n");
+            fwrite($fp, "; INIStorage\n");
             fwrite($fp, "; GitHub: https://github.com/pimnik98/INIStorage\n");
             fwrite($fp, '; Generation start...'."\n");
             foreach ($this->toArray(0) as $section_k => $section_v){
