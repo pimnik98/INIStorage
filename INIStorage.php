@@ -158,7 +158,7 @@ class INIStorage
                 if (is_array($section_v)){
                     fwrite($fp, '['.$section_k.']'."\n");
                     foreach ($section_v as $sv_k => $sv_v){
-                        fwrite($fp, ($sv_k).' = '.addslashes($sv_v)."\n");
+                        fwrite($fp, ($sv_k).' = "'.addslashes($sv_v)."\"\n");
                     }
                     fwrite($fp, "\n");
                 } else {
@@ -173,7 +173,7 @@ class INIStorage
             fwrite($fp, "; GitHub: https://github.com/pimnik98/INIStorage\n");
             fwrite($fp, '; Generation start...'."\n");
             foreach ($this->toArray(0) as $section_k => $section_v){
-                fwrite($fp, ($section_k).' = '.addslashes($section_v)."\n");
+                fwrite($fp, ($section_k).' = "'.addslashes($section_v)."\"\n");
             }
             fwrite($fp, '; Generation complete.'."\n");
             fclose($fp);
