@@ -11,6 +11,7 @@ class INIStorage
     private $file  = "";
     private $array = array(array(),array());
     private $mode  = self::MODE_NORMAL;
+    private $auto = 0;
 
     const MODE_NORMAL   = 0;   // Простой режим считывания INI
     const MODE_RAW      = 1;   // INI ключи-значения не будут обрабатываться
@@ -20,9 +21,10 @@ class INIStorage
      * INIStorage инициализация
      * @param $file - Путь к файлу для загрузки
      * @param bool $new - Создать новый файл если не существует.
+     * @param int $auto - Автосохранение (0 - Выкл | 1 - В режиме без секций | 2 - С секциями)
      * @param int $mode - Режим считывания INI-файла
      */
-    function __construct($file,$new=false,$mode=self::MODE_NORMAL)
+    function __construct($file,$new=false,$auto=0,$mode=self::MODE_NORMAL)
     {
         if (is_readable($file)){
             $this->file = $file;
@@ -38,6 +40,12 @@ class INIStorage
                 new \Exception("The file is not readable.");
             }
         }
+        $this->auto = $auto;
+    }
+	
+	
+    function __destruct() {
+        return ($this->auto != 0?($this->auto == 2?$this->save(1):$this->save(0)):null);
     }
 
     /**
